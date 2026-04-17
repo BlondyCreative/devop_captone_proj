@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-service
+  labels:
+    app: accounts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounts
+  template:
+    metadata:
+      labels:
+        app: accounts
+    spec:
+      containers:
+      - name: accounts
+        image: blonde8888/accounts-service:1.0
+        ports:
+        - containerPort: 5000
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounts-service
+spec:
+  type: ClusterIP
+  selector:
+    app: accounts
+  ports:
+  - port: 5000
+    targetPort: 5000
