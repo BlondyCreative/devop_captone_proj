@@ -1,0 +1,24 @@
+name: CI Build  # El nombre que definimos
+
+on:
+  push:
+    branches: [ "main" ]  # Se dispara en cada push a main
+  pull_request:
+    branches: [ "main" ]  # Se dispara en cada pull request a main
+
+jobs:
+  build:  # El nombre del job que configuramos
+    runs-on: ubuntu-latest  # <--- AQUÍ VA LA LÍNEA
+    
+    container:
+      image: python:3.9-slim  # La imagen que definimos para el contenedor
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Aquí irían tus comandos de instalación, por ejemplo:
+          # pip install -r requirements.txt
