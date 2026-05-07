@@ -15,6 +15,12 @@ csp = {
     'default-src': '\'self\'',
     'script-src': ['\'self\'', 'trusted-scripts.com']
 }
+
+is_testing = app.config.get("TESTING", False)
+
+# Inicializamos Talisman: 
+# Si is_testing es True, force_https será False (permitiendo que los tests pasen sin SSL)
+Talisman(app, content_security_policy=csp, force_https=not is_testing)
 # Import the routes After the Flask app is created
 from service import routes, models  # noqa: F401 E402
 from service.common import error_handlers, cli_commands  # noqa: F401 E402
