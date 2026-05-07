@@ -11,7 +11,10 @@ app.config.from_object(config)
 # --- ADD THIS LINE ---
 Talisman(app) 
 # ---------------------
-
+csp = {
+    'default-src': '\'self\'',
+    'script-src': ['\'self\'', 'trusted-scripts.com']
+}
 # Import the routes After the Flask app is created
 from service import routes, models  # noqa: F401 E402
 from service.common import error_handlers, cli_commands  # noqa: F401 E402
