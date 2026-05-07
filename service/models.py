@@ -12,15 +12,25 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
+def init_db(app):
+    """Initializes the SQLAlchemy app"""
+    # Esta es la forma correcta de evitar el error de "Already Registered"
+    if "sqlalchemy" not in app.extensions:
+        db.init_app(app)
+        Account.init_db(app)
 
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
 
 def init_db(app):
-    """Initialize the SQLAlchemy app"""
-    Account.init_db(app)
+    """Initializes the SQLAlchemy app"""
+    Account.init_db(app) 
 
+# Y dentro de la clase Account o donde esté db.init_app:
+def init_db(app):
+    if app not in db.engines: # O una validación similar dependiendo de tu versión
+        db.init_app(app)
 
 ######################################################################
 #  P E R S I S T E N T   B A S E   M O D E L
