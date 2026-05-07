@@ -7,15 +7,22 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
+
 def init_db(app):
-    """Initializes the SQLAlchemy app"""
-    # Esta es la forma definitiva de evitar el error de "Already Registered"
-    if "sqlalchemy" not in app.extensions:
+    """
+    Inicializa la base de datos de forma segura.
+    Verifica si ya existe una instancia para evitar el RuntimeError.
+    """
+    if 'sqlalchemy' not in app.extensions:
         db.init_app(app)
-        Account.init_db(app)
+    
+    with app.app_context():
+        db.create_all()  # Crea las tablas si no existen
+
 
 class DataValidationError(Exception):
     """Used for data validation errors when deserializing"""
+
 
 ######################################################################
 #  P E R S I S T E N T   B A S E   M O D E L
@@ -48,10 +55,8 @@ class PersistentBase:
     def init_db(cls, app):
         """Initializes the database session"""
         logger.info("Initializing database")
-        cls.app = app
-        # No llamamos a db.init_app aquí porque ya se hace en la función global
-        with app.app_context():
-            db.create_all()  # Crea las tablas si no existen
+        # Reutilizamos la función global para asegurar consistencia
+        init_db(app)
 
     @classmethod
     def all(cls):
@@ -65,13 +70,12 @@ class PersistentBase:
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
+
 ######################################################################
 #  A C C O U N T   M O D E L
 ######################################################################
 class Account(db.Model, PersistentBase):
     """Class that represents an Account"""
-
-    app = None
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
@@ -79,7 +83,8 @@ class Account(db.Model, PersistentBase):
     email = db.Column(db.String(64))
     address = db.Column(db.String(256))
     phone_number = db.Column(db.String(32), nullable=True)
-    date_joined = db.Column(db.Date(), nullable=False, default=date.today())
+    # Se pasa la función date.today sin paréntesis para que se ejecute en cada insert
+    date_joined = db.Column(db.Date(), nullable=False, default=date.today)
 
     def __repr__(self):
         return f"<Account {self.name} id=[{self.id}]>"
