@@ -13,7 +13,7 @@ def create_app():
 
     with app.app_context():
         # 2. IMPORTANTE: Aquí es donde incluyes routes.py
-        from service import routes, models  # <--- Esto registra tus rutas
+        from service import routes  # <--- Esto registra tus rutas
         from service.common import error_handlers
 
         # 3. Inicialización segura de la DB para tests
