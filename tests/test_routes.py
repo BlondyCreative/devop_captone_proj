@@ -1,7 +1,8 @@
 from flask import jsonify, request, url_for, make_response, abort
+from flask import current_app as app  # <--- Cambia esto
 from service.models import Account
-from service.common import status  # HTTP Status Codes
-from . import app
+from service.common import status
+# Elimina: from . import app (esto suele causar errores en los tests)
 
 ######################################################################
 # GET INDEX
@@ -12,6 +13,7 @@ def index():
     return jsonify(
         name="Account RESTful Service",
         version="1.0",
+        # Asegúrate de que el nombre coincida con la función de abajo
         paths=url_for("list_accounts", _external=True),
     ), status.HTTP_200_OK
 
@@ -25,7 +27,6 @@ def list_accounts():
     accounts = Account.all()
     results = [account.serialize() for account in accounts]
     return make_response(jsonify(results), status.HTTP_200_OK)
-
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
