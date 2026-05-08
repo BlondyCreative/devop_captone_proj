@@ -42,13 +42,16 @@ def create_app():
         app.logger.info(70 * "*")
 
         # 5. Inicializar Base de Datos (Solo si no estamos en TESTING)
-        if not is_testing:
-            try:
-                models.init_db(app)
-                app.logger.info("Database initialized!")
-            except Exception as error:
-                app.logger.critical("%s: Cannot continue", error)
-                sys.exit(4)
+       if not is_testing:
+    try:
+        models.init_db(app)
+        app.logger.info("Database initialized!")
+    except Exception as error:
+        app.logger.error("Database could not be initialized: %s", error)
+        # Solo salimos con error 4 si estamos en un entorno donde es CRÍTICO
+        # Si estás desarrollando localmente, esto te permitirá seguir viendo otros errores
+        if app.config.get("ENV") == "production":
+            sys.exit(4)
 
     app.logger.info("Service initialized!")
     return app
