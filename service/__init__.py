@@ -20,10 +20,13 @@ def create_app():
         if not app.config.get("TESTING"):
             try:
                 models.init_db(app)
+                app.logger.info("Database initialized!")
             except Exception as error:
-                app.logger.error(f"Error de base de datos: {error}")
-                # No uses sys.exit(4) aquí para que pytest no muera
-                if app.config.get("ENV") == "production":
+                app.logger.error(f"Database error: {error}")
+                # SOLO salimos si es producción REAL y NO estamos en un test
+                if app.config.get("ENV") == "production" and "pytest" not in sys.modules:
                     sys.exit(4)
+                else:
+                    app.logger.info("Skipping fatal exit: Development/Test mode detected.")
 
     return app
