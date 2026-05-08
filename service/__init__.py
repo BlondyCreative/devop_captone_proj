@@ -23,11 +23,14 @@ def create_app():
                 app.logger.info("Database initialized!")
             except Exception as error:
                 app.logger.error(f"Database error: {error}")
-                # SOLO salimos si es producción REAL y NO estamos en un test
+                
+                # SOLO cerramos el proceso si es PRODUCCIÓN real 
+                # y NO estamos ejecutando un comando de pytest
                 if app.config.get("ENV") == "production" and "pytest" not in sys.modules:
                     sys.exit(4)
                 else:
-                    app.logger.info("Skipping fatal exit: Development/Test mode detected.")
+                    # En desarrollo o tests, solo imprimimos el error pero NO matamos el proceso
+                    app.logger.info("Skipping SystemExit: Development or Test environment detected.")
 
     return app
 if __name__ == "__main__" or "gunicorn" in sys.argv[0]:
