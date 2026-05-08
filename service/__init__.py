@@ -8,6 +8,12 @@ from service.common import log_handlers
 app = Flask(__name__)
 app.config.from_object(config)
 
+def init_db(app):
+    """Inicializa SQLAlchemy de forma segura"""
+    # Importamos db aquí o usamos models.db
+    from service.models import db 
+    if "sqlalchemy" not in app.extensions:
+        db.init_app(app)
 # 2. Configurar Seguridad (Talisman)
 # Definimos la política de seguridad
 csp = {
