@@ -3,7 +3,6 @@ from flask import Flask
 from flask_talisman import Talisman
 from service import config
 from service.common import log_handlers
-# Importamos la instancia de SQLAlchemy desde models
 from service.models import db
 
 def create_app():
@@ -24,11 +23,10 @@ def create_app():
     Talisman(app, content_security_policy=csp, force_https=not is_testing)
 
     # 2. Inicializar extensiones
-    # Solo inicializamos si no ha sido registrada previamente (evita el RuntimeError)
     if "sqlalchemy" not in app.extensions:
         db.init_app(app)
 
-    # 3. Importar rutas y handlers (dentro del contexto para evitar ciclos)
+    # 3. Importar rutas y componentes dentro del contexto
     with app.app_context():
         # pylint: disable=import-outside-toplevel
         from service import routes, models
@@ -41,22 +39,23 @@ def create_app():
         app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*"))
         app.logger.info(70 * "*")
 
-        # 5. Inicializar Base de Datos (Solo si no estamos en TESTING)
-      if not is_testing:
-    try:
-        models.init_db(app)
-        app.logger.info("Database initialized!")
-    except Exception as error:
-        app.logger.error("Database initialization failed: %s", error)
-        
-        # IMPORTANTE: Solo salir si NO estamos corriendo tests.
-        # Pytest define un modo especial que podemos detectar:
-        if "pytest" not in sys.modules:
-             app.logger.critical("Shutting down service...")
-             sys.exit(4)
+        # 5. Inicializar Base de Datos (Solo si no estamos en modo TESTING)
+        if not is_testing:
+            try:
+                models.init_db(app)
+                app.logger.info("Database initialized!")
+            except Exception as error:
+                app.logger.error("Database initialization failed: %s", error)
+                
+                # CRÍTICO: No usar sys.exit(4) si estamos corriendo tests
+                # Esto evita el INTERNALERROR en pytest
+                if "pytest" not in sys.modules and app.config.get("ENV") == "production":
+                    app.logger.critical("Shutting down service due to critical error...")
+                    sys.exit(4)
 
     app.logger.info("Service initialized!")
     return app
 
-# Creamos la instancia global para que Gunicorn la encuentre
+# IMPORTANTE: Para que Gunicorn y Flask CLI funcionen, 
+# creamos la instancia 'app' llamando a la función.
 app = create_app()
