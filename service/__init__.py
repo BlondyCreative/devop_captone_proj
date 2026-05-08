@@ -16,17 +16,14 @@ def create_app():
         'script-src': ['\'self\'', 'trusted-scripts.com']
     }
 
-    # Detectamos si estamos en modo de prueba
     is_testing = app.config.get("TESTING", False)
-    
-    # Inicializamos Talisman
     Talisman(app, content_security_policy=csp, force_https=not is_testing)
 
     # 2. Inicializar extensiones
     if "sqlalchemy" not in app.extensions:
         db.init_app(app)
 
-    # 3. Importar rutas y componentes dentro del contexto
+    # 3. Importar componentes dentro del contexto
     with app.app_context():
         # pylint: disable=import-outside-toplevel
         from service import routes, models
@@ -39,23 +36,24 @@ def create_app():
         app.logger.info("  A C C O U N T   S E R V I C E   R U N N I N G  ".center(70, "*"))
         app.logger.info(70 * "*")
 
-        # 5. Inicializar Base de Datos (Solo si no estamos en modo TESTING)
+        # 5. Inicializar Base de Datos
+        # Usamos is_testing definido arriba para consistencia
         if not is_testing:
             try:
                 models.init_db(app)
                 app.logger.info("Database initialized!")
             except Exception as error:
-                app.logger.error("Database initialization failed: %s", error)
-                
-                # CRÍTICO: No usar sys.exit(4) si estamos corriendo tests
-                # Esto evita el INTERNALERROR en pytest
-                if "pytest" not in sys.modules and app.config.get("ENV") == "production":
-                    app.logger.critical("Shutting down service due to critical error...")
+                app.logger.error(f"Database error: {error}")
+                # Solo cerramos el proceso si estamos en producción real
+                # y NO estamos corriendo tests (detectamos pytest en los módulos)
+                if app.config.get("ENV") == "production" and "pytest" not in sys.modules:
                     sys.exit(4)
 
     app.logger.info("Service initialized!")
     return app
 
-# IMPORTANTE: Para que Gunicorn y Flask CLI funcionen, 
-# creamos la instancia 'app' llamando a la función.
+# NOTA PARA GUNICORN: 
+# Si usas gunicorn, debes apuntar a 'service:create_app()' o dejar 'app = create_app()'
+# pero lo ideal para los tests es que NO se ejecute solo.
+# Por ahora, para arreglar tu error de pytest, DEJA SOLO ESTO:
 app = create_app()
