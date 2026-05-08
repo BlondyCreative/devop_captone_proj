@@ -1,39 +1,29 @@
 import sys
 from flask import Flask
-from flask_talisman import Talisman
 from service import config
-from service.common import log_handlers
 from service.models import db
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
 
-    # 1. Seguridad
-    is_testing = app.config.get("TESTING", False)
-    Talisman(app, content_security_policy={'default-src': "\'self\'"}, force_https=not is_testing)
-
-    # 2. Extensiones
+    # 1. Inicializar la base de datos (evitando el RuntimeError)
     if "sqlalchemy" not in app.extensions:
         db.init_app(app)
 
     with app.app_context():
-        # 3. Imports internos
-        from service import routes, models
-        from service.common import error_handlers, cli_commands
+        # 2. IMPORTANTE: Aquí es donde incluyes routes.py
+        from service import routes, models  # <--- Esto registra tus rutas
+        from service.common import error_handlers
 
-        # 4. Logs
-        log_handlers.init_logging(app, "gunicorn.error")
-
-        # 5. Inicialización de DB (PROTEGIDA)
-        if not is_testing:
+        # 3. Inicialización segura de la DB para tests
+        if not app.config.get("TESTING"):
             try:
                 models.init_db(app)
             except Exception as error:
-                app.logger.error(f"Database connection skipped: {error}")
-                # HEMOS ELIMINADO EL SYS.EXIT PARA QUE NO MATE A PYTEST
+                app.logger.error(f"Error de base de datos: {error}")
+                # No uses sys.exit(4) aquí para que pytest no muera
+                if app.config.get("ENV") == "production":
+                    sys.exit(4)
 
     return app
-
-# Crear la instancia para Flask/Gunicorn
-app = create_app()
