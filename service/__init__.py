@@ -30,3 +30,5 @@ def create_app():
                     app.logger.info("Skipping fatal exit: Development/Test mode detected.")
 
     return app
+if __name__ == "__main__" or "gunicorn" in sys.argv[0]:
+    app = create_app()
