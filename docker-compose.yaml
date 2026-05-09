@@ -1,22 +1,19 @@
 services:
-
   web:
-    build: 
-    context: .
-    dockerfile: service/Dockerfile
+    build:
+      context: .
+      dockerfile: service/Dockerfile
     ports:
       - "8080:8080"
     environment:
       - DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
       - ENV=development
-      # IMPORTANTE: Esto evita que el código ejecute el sys.exit(4) durante desarrollo
-      - TESTING=False 
+      - TESTING=False
     volumes:
       - .:/app
     depends_on:
       - db
 
-  # El servicio de la base de datos (Postgres es el estándar para estos proyectos)
   db:
     image: postgres:15-alpine
     environment:
