@@ -1,24 +1,18 @@
 FROM python:3.10-slim
-
-# 2. Definir el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# 3. Copiar el archivo de requerimientos primero para aprovechar el cache de Docker
+# Instalar dependencias
 COPY requirements.txt .
-
-# 4. Instalar las dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Copiar TODO el contenido de tu carpeta local al contenedor
-# Esto incluye la carpeta 'service/' y tus archivos de configuración
+# COPIA TODO (esto copiará la carpeta service al contenedor)
 COPY . .
 
-# 6. Configurar la variable de entorno para que Python reconozca la raíz como módulo
+# Agrega la raíz al PATH para que Python encuentre los módulos
 ENV PYTHONPATH=/app
 
-# 7. Informar el puerto en el que escuchará el contenedor
 EXPOSE 8080
 
-# 8. Comando para ejecutar la aplicación con Gunicorn
-# IMPORTANTE: Usamos 'service.app:app' porque tu archivo está en la subcarpeta service
+# EL CAMBIO CLAVE: service.app:app
+# Esto le dice a Gunicorn: "Entra a service y busca el objeto app"
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "service.app:app"]
