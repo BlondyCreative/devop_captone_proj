@@ -4,20 +4,18 @@ from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
 
-# Create the SQLAlchemy object to be initialized later in init_db()
+# Create the SQLAlchemy object
 db = SQLAlchemy()
-
 
 def init_db(app):
     """
     Inicializa la base de datos de forma segura.
-    Verifica si ya existe una instancia para evitar el RuntimeError.
+    Se asegura de que SQLAlchemy esté registrado y crea las tablas.
     """
     if 'sqlalchemy' not in app.extensions:
         db.init_app(app)
-    
     with app.app_context():
-        db.create_all()  # Crea las tablas si no existen
+        db.create_all()
 
 
 class DataValidationError(Exception):
@@ -34,41 +32,34 @@ class PersistentBase:
         self.id = None  # pylint: disable=invalid-name
 
     def create(self):
-        """Creates an Account to the database"""
+        """Creates a record to the database"""
         logger.info("Creating %s", self.name)
         self.id = None  # id must be none to generate next primary key
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """Updates an Account to the database"""
+        """Updates a record to the database"""
         logger.info("Updating %s", self.name)
         db.session.commit()
 
     def delete(self):
-        """Removes an Account from the data store"""
+        """Removes a record from the data store"""
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
-
-    @classmethod
-    def init_db(cls, app):
-        """Initializes the database session"""
-        logger.info("Initializing database")
-        # Reutilizamos la función global para asegurar consistencia
-        init_db(app)
-
-    @classmethod
-    def all(cls):
-        """Returns all of the records in the database"""
-        logger.info("Processing all records")
-        return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
         """Finds a record by its ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
+
+    @classmethod
+    def all(cls):
+        """Returns all records in the database"""
+        logger.info("Processing all records")
+        return cls.query.all()
 
 
 ######################################################################
@@ -79,11 +70,10 @@ class Account(db.Model, PersistentBase):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    email = db.Column(db.String(64))
-    address = db.Column(db.String(256))
+    name = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
+    address = db.Column(db.String(256), nullable=False)
     phone_number = db.Column(db.String(32), nullable=True)
-    # Se pasa la función date.today sin paréntesis para que se ejecute en cada insert
     date_joined = db.Column(db.Date(), nullable=False, default=date.today)
 
     def __repr__(self):
@@ -107,16 +97,19 @@ class Account(db.Model, PersistentBase):
             self.email = data["email"]
             self.address = data["address"]
             self.phone_number = data.get("phone_number")
+            
+            # Manejo de la fecha
             date_joined = data.get("date_joined")
             if date_joined:
                 self.date_joined = date.fromisoformat(date_joined)
             else:
                 self.date_joined = date.today()
+                
         except KeyError as error:
             raise DataValidationError("Invalid Account: missing " + error.args[0]) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Account: body of request contained bad or no data - " + error.args[0]
+                "Invalid Account: body of request contained bad or no data - " + str(error)
             ) from error
         return self
 
