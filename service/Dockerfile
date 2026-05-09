@@ -2,14 +2,17 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install dependencies first (better caching)
+# 1. Instalar dependencias
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the app
+# 2. Copiar todo el código (incluyendo la carpeta service)
 COPY . .
 
-EXPOSE 5001
+# 3. Puerto correcto (Capstone suele usar 8080 o 5000, 
+# según tu docker-compose anterior era 8080)
+EXPOSE 8080
 
-# Use Gunicorn for production
-CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:app"]
+# 4. El comando CLAVE: service.app:app 
+# Esto le dice: "Entra a la carpeta service y busca app.py"
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "service.app:app"]
