@@ -6,6 +6,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY . .
+ENV PYTHONPATH=/app
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "service.app:app"]
 # 2. Copiar el resto de la aplicación al contenedor
 COPY . .
 
