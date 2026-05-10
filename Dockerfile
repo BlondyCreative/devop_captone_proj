@@ -11,8 +11,5 @@ COPY . .
 # Agrega la raíz al PATH para que Python encuentre los módulos
 ENV PYTHONPATH=/app
 
-EXPOSE 8080
-
-# EL CAMBIO CLAVE: service.app:app
-# Esto le dice a Gunicorn: "Entra a service y busca el objeto app"
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "service:app"]
+EXPOSE 5001
+CMD ["gunicorn", "--bind", "0.0.0.0:5001", "service:app"]
