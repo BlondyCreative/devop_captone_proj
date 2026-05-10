@@ -32,5 +32,7 @@ def create_app():
         else:
             app.logger.info("Continuando a pesar del error de DB (Ambiente de Test/Desarrollo)")
     return app
-if __name__ == "__main__" or "gunicorn" in sys.argv[0]:
-    app = create_app()
+app = create_app() 
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)
