@@ -1,9 +1,9 @@
 import sys
 from flask import Flask
-# Importaciones corregidas usando rutas relativas
-import config
-from models import db
-import models
+# Importaciones corregidas usando rutas relativas dentro del paquete
+from . import config
+from .models import db
+from . import models
 
 def create_app():
     app = Flask(__name__)
@@ -13,9 +13,9 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
-        # 2. Registro de rutas y manejadores (Corregido)
-        import routes
-        from common import error_handlers
+        # 2. Registro de rutas y manejadores usando rutas relativas
+        from . import routes
+        from .common import error_handlers
 
         # 3. Inicialización de la DB
         if not app.config.get("TESTING"):
@@ -31,4 +31,5 @@ def create_app():
     
     return app
 
+# Esto es lo que Gunicorn busca cuando ejecutas service.app:app
 app = create_app()
