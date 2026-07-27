@@ -4,8 +4,8 @@ metadata:
   name: accounts-service
 spec:
   type: NodePort
- selector:
-  app: accounts
+  selector:
+    app: accounts
   ports:
     - port: 5000
       targetPort: 5000
