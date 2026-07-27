@@ -18,7 +18,7 @@ spec:
       - name: accounts-service
         image: image-registry.openshift-image-registry.svc:5000/sn-labs-nicolegonzal/accounts:15
         command: ["gunicorn"]
-        args: ["--bind", "0.0.0.0:5001", "service.app:app"]
+        args: ["--bind", "0.0.0.0:5000", "service.app:app"]
 ---
 apiVersion: v1
 kind: Service
