@@ -1,15 +1,15 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
+
 WORKDIR /app
 
-# Instalar dependencias
+# Install dependencies first (better caching)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# COPIA TODO (esto copiará la carpeta service al contenedor)
+# Copy the rest of the app
 COPY . .
 
-# Agrega la raíz al PATH para que Python encuentre los módulos
-ENV PYTHONPATH=/app
-
 EXPOSE 5001
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "service:app"]
+
+# Use Gunicorn for production
+CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:app"]
