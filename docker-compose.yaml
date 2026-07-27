@@ -7,14 +7,13 @@ services:
     environment:
       - DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
       - ENV=development
-      # IMPORTANTE: Esto evita que el código ejecute el sys.exit(4) durante desarrollo
-      - TESTING=False 
+      - TESTING=False
     volumes:
       - .:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
-  # El servicio de la base de datos (Postgres es el estándar para estos proyectos)
   db:
     image: postgres:15-alpine
     environment:
@@ -23,3 +22,8 @@ services:
       - POSTGRES_DB=postgres
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10

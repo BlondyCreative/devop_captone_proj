@@ -14,12 +14,11 @@ spec:
       labels:
         app: accounts
     spec:
-      containers:
-      - name: accounts
-        image: blonde8888/accounts-service:1.0
-        ports:
-        - containerPort: 5001
-        imagePullPolicy: IfNotPresent
+       containers:
+        - name: accounts-service
+          image: image-registry.openshift-image-registry.svc:5000/sn-labs-nicolegonzal/accounts-service
+          command: ["gunicorn"]
+          args: ["--bind", "0.0.0.0:5000", "service.app:app"]
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +29,5 @@ spec:
   selector:
     app: accounts
   ports:
-  - port: 5001
-    targetPort: 5001
+  - port: 5000
+    targetPort: 5000
