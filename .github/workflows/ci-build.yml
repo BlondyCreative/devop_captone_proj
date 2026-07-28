@@ -14,6 +14,9 @@ jobs:
       image: python:3.11-slim
 
     steps:
+      - name: Clean workspace
+        run: rm -rf ./*
+
       - name: Checkout code
         uses: actions/checkout@v3
 
