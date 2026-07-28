@@ -14,11 +14,19 @@ spec:
       labels:
         app: accounts
     spec:
+<<<<<<< HEAD
        containers:
         - name: accounts-service
           image: image-registry.openshift-image-registry.svc:5000/sn-labs-nicolegonzal/accounts-service
           command: ["gunicorn"]
           args: ["--bind", "0.0.0.0:5000", "service.app:app"]
+=======
+      containers:
+      - name: accounts-service
+        image: image-registry.openshift-image-registry.svc:5000/sn-labs-nicolegonzal/accounts:15
+        command: ["gunicorn"]
+        args: ["--bind", "0.0.0.0:5000", "service.app:app"]
+>>>>>>> 1ff8c6148755331bfef6e35b99b1093567adaff3
 ---
 apiVersion: v1
 kind: Service

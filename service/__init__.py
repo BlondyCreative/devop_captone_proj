@@ -25,4 +25,8 @@ def create_app():
                 else:
                     flask_app.logger.info("Continuando a pesar del error de DB")
 
+<<<<<<< HEAD
     return flask_app
+=======
+    return flask_app
+>>>>>>> 1ff8c6148755331bfef6e35b99b1093567adaff3

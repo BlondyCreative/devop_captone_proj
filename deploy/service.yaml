@@ -9,4 +9,8 @@ spec:
   ports:
     - port: 5000
       targetPort: 5000
+<<<<<<< HEAD
       nodePort: 30001
+=======
+      nodePort: 30001
+>>>>>>> 1ff8c6148755331bfef6e35b99b1093567adaff3
