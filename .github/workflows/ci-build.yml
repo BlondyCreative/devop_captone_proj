@@ -1,17 +1,17 @@
-name: CI Build  # El nombre que definimos
+name: CI Build
 
 on:
   push:
-    branches: [ "main" ]  # Se dispara en cada push a main
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]  # Se dispara en cada pull request a main
+    branches: [ "main" ]
 
 jobs:
-  build:  # El nombre del job que configuramos
-    runs-on: ubuntu-latest  # <--- AQUÍ VA LA LÍNEA
+  build:
+    runs-on: ubuntu-latest
 
     container:
-        image: python:3.11-slim
+      image: python:3.11-slim
 
     steps:
       - name: Checkout code
@@ -21,6 +21,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 nose
+
+      - name: Lint code
+        run: flake8 .
 
       - name: Run tests
         run: nosetests -v

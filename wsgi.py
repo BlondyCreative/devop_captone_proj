@@ -1,3 +1,4 @@
-from service import create_app
+from service import app
 
-app = create_app()
+if __name__ == "__main__":
+    app.run()
