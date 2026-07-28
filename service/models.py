@@ -3,6 +3,11 @@ from datetime import date
 
 db = SQLAlchemy()
 
+def init_db(app):
+    """Inicializa la base de datos y crea tablas si no existen."""
+    with app.app_context():
+        db.create_all()
+
 class Account(db.Model):
     __tablename__ = "accounts"
 
@@ -13,13 +18,13 @@ class Account(db.Model):
     phone_number = db.Column(db.String(32), nullable=True)
     date_joined = db.Column(db.Date(), nullable=False, default=date.today)
 
-    # CREATE como método de instancia
+    # CREATE
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
 
-    # READ con nombre esperado por los tests
+    # READ
     @staticmethod
     def find(account_id):
         return Account.query.get(account_id)
@@ -29,17 +34,12 @@ class Account(db.Model):
     def all():
         return Account.query.all()
 
-    # UPDATE como método de instancia sin argumentos
+    # UPDATE
     def update(self):
         db.session.commit()
         return self
 
-    # DELETE como método de instancia
+    # DELETE
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-        return self
-
-def init_db(app):
-    with app.app_context():
-        db.create_all()
