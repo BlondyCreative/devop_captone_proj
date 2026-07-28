@@ -13,13 +13,11 @@ class Account(db.Model):
     phone_number = db.Column(db.String(32), nullable=True)
     date_joined = db.Column(db.Date(), nullable=False, default=date.today)
 
-    # CREATE
-    @staticmethod
-    def create(data):
-        account = Account(**data)
-        db.session.add(account)
+    # CREATE como método de instancia
+    def create(self):
+        db.session.add(self)
         db.session.commit()
-        return account
+        return self
 
     # READ
     @staticmethod
@@ -32,23 +30,17 @@ class Account(db.Model):
         return Account.query.all()
 
     # UPDATE
-    @staticmethod
-    def update(account_id, data):
-        account = Account.query.get(account_id)
-        if account:
-            for key, value in data.items():
-                setattr(account, key, value)
-            db.session.commit()
-        return account
+    def update(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+        db.session.commit()
+        return self
 
     # DELETE
-    @staticmethod
-    def delete(account_id):
-        account = Account.query.get(account_id)
-        if account:
-            db.session.delete(account)
-            db.session.commit()
-        return account
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        return self
 
 def init_db(app):
     with app.app_context():
