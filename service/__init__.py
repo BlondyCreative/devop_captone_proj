@@ -8,15 +8,27 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    # Crear carpeta instance si no existe
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    instance_dir = os.path.join(base_dir, "..", "instance")
-    os.makedirs(instance_dir, exist_ok=True)
+    # Cargar configuración desde config.py
+    app.config.from_object("service.config")
 
-    db_path = os.path.join(instance_dir, "accounts.db")
+    # Si la base de datos es SQLite, asegurar que el archivo exista
+    db_uri = app.config["SQLALCHEMY_DATABASE_URI"]
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    if db_uri.startswith("sqlite:///"):
+        # Obtener ruta absoluta del archivo SQLite
+        db_file = db_uri.replace("sqlite:///", "")
+        db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), db_file))
+
+        # Crear carpeta si no existe
+        db_dir = os.path.dirname(db_path)
+        os.makedirs(db_dir, exist_ok=True)
+
+        # Crear archivo vacío si no existe
+        if not os.path.exists(db_path):
+            open(db_path, "a").close()
+
+        # Reasignar la ruta absoluta
+        app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 
     db.init_app(app)
     init_db(app)
