@@ -1,17 +1,17 @@
-name: CI Build  # El nombre que definimos
+name: CI Build  
 
 on:
   push:
-    branches: [ "main" ]  # Se dispara en cada push a main
+    branches: [ "main" ]  
   pull_request:
-    branches: [ "main" ]  # Se dispara en cada pull request a main
+    branches: [ "main" ]  
 
 jobs:
-  build:  # El nombre del job que configuramos
-    runs-on: ubuntu-latest  # <--- AQUÍ VA LA LÍNEA
+  build:  
+    runs-on: ubuntu-latest  
 
     container:
-      image: python:3.9-slim  # La imagen que definimos para el contenedor
+      image: python:3.9-slim  
 
     steps:
       - name: Checkout code
