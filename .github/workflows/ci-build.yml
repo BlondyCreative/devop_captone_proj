@@ -1,17 +1,17 @@
-name: CI Build  
+name: CI Build
 
 on:
   push:
-    branches: [ "main" ]  
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]  
+    branches: [ "main" ]
 
 jobs:
-  build:  
-    runs-on: ubuntu-latest  
+  build:
+    runs-on: ubuntu-latest
 
     container:
-      image: python:3.9-slim  
+      image: python:3.9-slim
 
     steps:
       - name: Checkout code
@@ -21,6 +21,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
+
+      - name: Lint code
+        run: flake8 .
 
       - name: Run tests
         run: nosetests -v
