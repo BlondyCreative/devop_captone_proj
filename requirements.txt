@@ -1,27 +1,5 @@
-# Pin dependencies that might cause breakage
-Werkzeug==2.1.2
-
-# Build dependencies
-Flask==2.1.2
-python-dotenv==0.20.0
-flask-talisman
-flask-cors
-
-# Runtime dependencies
-gunicorn==20.1.0
-honcho==1.1.0
-
-# Code quality
-pylint==2.14.0
-flake8==4.0.1
-black==22.3.0
-
+Flask
+Flask-Cors
+Flask-SQLAlchemy
 pytest
-pinocchio==0.4.3
-factory-boy==2.12.0
-
-# Code Coverage
-coverage==6.3.2
-
-# Utilities
-httpie==3.2.1
+flake8
