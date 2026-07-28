@@ -22,27 +22,22 @@ class Account(db.Model):
     date_joined = db.Column(db.Date(), nullable=False, default=date.today)
 
     def create(self):
-        """CREATE: guarda la instancia en la base de datos."""
         db.session.add(self)
         db.session.commit()
         return self
 
     @staticmethod
     def find(account_id):
-        """READ: busca una cuenta por id."""
         return Account.query.get(account_id)
 
     @staticmethod
     def all():
-        """LIST: devuelve todas las cuentas."""
         return Account.query.all()
 
     def update(self):
-        """UPDATE: confirma cambios en la instancia."""
         db.session.commit()
         return self
 
     def delete(self):
-        """DELETE: elimina la instancia de la base de datos."""
         db.session.delete(self)
         db.session.commit()
