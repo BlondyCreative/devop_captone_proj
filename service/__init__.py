@@ -6,7 +6,6 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    # Configuración de la base de datos
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/accounts.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -18,5 +17,4 @@ def create_app():
 
     return app
 
-# ESTA LÍNEA ES CLAVE PARA LOS TESTS
 app = create_app()
