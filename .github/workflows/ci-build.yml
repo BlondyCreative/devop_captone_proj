@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest  # <--- AQUÍ VA LA LÍNEA
 
     container:
-      image: python:3.9-slim  # La imagen que definimos para el contenedor
+        image: python:3.11-slim
 
     steps:
       - name: Checkout code
