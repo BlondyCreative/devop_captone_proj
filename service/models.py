@@ -78,10 +78,13 @@ class Account(db.Model, PersistentBase):
                 self.date_joined = date.today()
 
         except KeyError as error:
-            raise DataValidationError("Invalid Account: missing " + error.args[0]) from error
+            msg = "Invalid Account: missing " + error.args[0]
+            raise DataValidationError(msg) from error
         except TypeError as error:
-            raise DataValidationError(
-                "Invalid Account: body contained bad or no data - " + str(error)
-            ) from error
+            msg = (
+                "Invalid Account: body contained bad or no data - "
+                + str(error)
+            )
+            raise DataValidationError(msg) from error
 
         return self
