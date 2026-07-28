@@ -19,24 +19,22 @@ class Account(db.Model):
         db.session.commit()
         return self
 
-    # READ
+    # READ con nombre esperado por los tests
     @staticmethod
-    def read(account_id):
+    def find(account_id):
         return Account.query.get(account_id)
 
     # LIST
     @staticmethod
-    def list_all():
+    def all():
         return Account.query.all()
 
-    # UPDATE
-    def update(self, data):
-        for key, value in data.items():
-            setattr(self, key, value)
+    # UPDATE como método de instancia sin argumentos
+    def update(self):
         db.session.commit()
         return self
 
-    # DELETE
+    # DELETE como método de instancia
     def delete(self):
         db.session.delete(self)
         db.session.commit()
